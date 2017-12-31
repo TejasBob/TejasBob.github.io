@@ -84,6 +84,7 @@ Here, we allocate memory for R,G,B channel arrays on GPU. THe variables d_b, d_g
 Once the file is saved to disk, run the following command in terminal to generate the .so file (shared object file)
 
 **Generate .so file**
+
 	path_to_nvcc -Xcompiler -fPIC -shared -o cuda_gray.so cuda_lib.cu
 
 Now let's see the **Python code**.
@@ -112,8 +113,6 @@ Now let's see the **Python code**.
 	    __cuda_gray(b_p, g_p, r_p, gray_p, size)
 
 Above code reads cuda_gray function from shared object file.
-
-Let's use run the code
 
 	if __name__ == '__main__':
 
