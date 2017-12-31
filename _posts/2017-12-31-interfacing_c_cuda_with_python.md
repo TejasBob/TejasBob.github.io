@@ -1,22 +1,22 @@
 ---
 layout: post
-title: Hello World!
+title: Interfacing C/C++ CUDA implementation with Python 
 ---
 
 
-This article is about reusing existing c/c++ CUDA implementation in Python.
-
-The rationale behind doing this is, doing fast prototyping in Python while CUDA does most of the heavy lifting in C/C++
-
+This article is about reusing existing C/C++ CUDA implementation in Python.
+The rationale behind doing this is, doing fast prototyping in Python while CUDA does most of the heavy lifting in C/C++.
 We are going to use shared objects to do so.
 
 To explain the process I'm going to perform RGB to Gray conversion using CUDA.
+RGB to Gray conversion is a standard operation in Image-Processing. 
 
-RGB to Gray conversion is a standard operation in Image-Processing.
+*Note*
+
+Following code is only meant for explanation purpose.
 
 Mathematically, 
-
-gray = 0.299 * r + 0.587 * g + 0.114 * b
+	gray = 0.299 * r + 0.587 * g + 0.114 * b
 
 let us write a kernal for the rgb to gray conversion.
 
@@ -24,31 +24,26 @@ let us write a kernal for the rgb to gray conversion.
 	#include <cuda_runtime_api.h>
 	#include<stdio.h>
 
-	__global__ void cuda_gray_kernel(unsigned char *b, unsigned char *g, unsigned char *r, unsigned char *gray, size_t size)
-	{
+	__global__ void cuda_gray_kernel(unsigned char *b, unsigned char *g,
+									 unsigned char *r, unsigned char *gray, size_t size){
 	    size_t idx = blockIdx.x * blockDim.x + threadIdx.x;
 	    if (idx >= size) {
 	        return;
 	    }
 	    
 	    gray[idx] = (unsigned char)(0.114f*b[idx] + 0.587f*g[idx] + 0.299f*r[idx] + 0.5);
-
 	}
 
 
 In the above code,
 b,g,r are one dimensional arrays of unsigned chars holding B, G, R color values of the given image.
+First we calculate the thread index and write the computed grayscale value at that index.
 
 
-first we calculate the thread index and write the computed grayscale value at that index.
-
-
-Now let's see the memory allocation part,
-
+Now let's see the Python interfacing part,
 
 	extern "C" {
-	void cuda_gray(unsigned char *b, unsigned char *g, unsigned char *r, unsigned char *gray, size_t size)
-	{
+	void cuda_gray(unsigned char *b, unsigned char *g, unsigned char *r, unsigned char *gray, size_t size){
 
 	    cudaEvent_t start, stop;
 	    cudaEventCreate(&start);
@@ -83,15 +78,14 @@ Now let's see the memory allocation part,
 	    cudaFree(d_r);
 	    cudaFree(d_gray);
 	}
-
-
 	}
 
-In this code we allocate memory for r,g,b channel arrays on gpu. THe variables d_a, d_b, d_c are the pointers to memory on GPU (d_ in the name refers to device variable, GPU is called as Device and CPU machines are Host)
+Above function will be exposed in python code to perform RGB2GRAY conversion.
+Here, we allocate memory for R,G,B channel arrays on GPU. THe variables d_b, d_g, d_r are the pointers to memory on GPU (d_ in the name refers to device variable, GPU is called as Device and CPU machines are Host). Save above code in a file name cuda_lib.cu
 
 Once the file is ready, run the following command to generate the .so file.
 
-	path_to_nvcc -Xcompiler -fPIC -shared -o cuda_gray.so cuda_gray.cu
+	path_to_nvcc -Xcompiler -fPIC -shared -o cuda_gray.so cuda_lib.cu
 
 Now let's see the python part.
 
@@ -138,5 +132,10 @@ Let's use run the code
 	    gray = gray.reshape(rows, columns,)
 	    cv2.imwrite('gray.jpg', gray)
 
-run as:
+Save above python code in a file named cuda_test.py
+Hit terminal and run:	
+
 	python cuda_test.py
+
+You can also refer to [github repository](https://github.com/TejasBob/CUDA_C-CPP_with_Python) for source code.
+
