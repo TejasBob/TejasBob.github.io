@@ -13,9 +13,9 @@ RGB to Gray conversion is a standard operation in Image-Processing.
 
 *Note* : Following code is only meant for explanation purpose.
 
-Mathematically:
+**Mathematically**:
 
-	**gray = 0.299 * r + 0.587 * g + 0.114 * b**
+	gray = 0.299 * r + 0.587 * g + 0.114 * b
 
 let us write a **CUDA kernal** for the RGB to Gray conversion.
 
@@ -83,9 +83,10 @@ Here, we allocate memory for R,G,B channel arrays on GPU. THe variables d_b, d_g
 
 Once the file is saved to disk, run the following command in terminal to generate the .so file (shared object file)
 
+**Generate .so file**
 	path_to_nvcc -Xcompiler -fPIC -shared -o cuda_gray.so cuda_lib.cu
 
-Now let's see the python part.
+Now let's see the **Python code**.
 
 	import numpy as np
 	import ctypes
@@ -110,7 +111,7 @@ Now let's see the python part.
 	    gray_p = gray.ctypes.data_as(POINTER(c_ubyte))
 	    __cuda_gray(b_p, g_p, r_p, gray_p, size)
 
-Aboe code reads cuda_gray function from shared object file.
+Above code reads cuda_gray function from shared object file.
 
 Let's use run the code
 
