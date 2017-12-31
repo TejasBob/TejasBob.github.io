@@ -4,11 +4,11 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
+Uncertainty addict!
 
 ### More Information
 
-A place to include any other types of information that you'd like to include about yourself.
+Can you feel it...it is flowing, sit back and feel it, it is passing and the current moment has just been hard-wired in the space-time, it is never gonna come back, it's gone, it's invaluable, use it wisely, be Awesome and make sure you rock, because it's once in a ONCE opportunity :)
 
 ### Contact me
 
