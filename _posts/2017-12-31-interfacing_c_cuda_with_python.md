@@ -11,14 +11,13 @@ We are going to use shared objects to do so.
 To explain the process I'm going to perform RGB to Gray conversion using CUDA.
 RGB to Gray conversion is a standard operation in Image-Processing. 
 
-*Note*
+*Note* : Following code is only meant for explanation purpose.
 
-Following code is only meant for explanation purpose.
+Mathematically:
 
-Mathematically, 
-	gray = 0.299 * r + 0.587 * g + 0.114 * b
+	**gray = 0.299 * r + 0.587 * g + 0.114 * b**
 
-let us write a kernal for the rgb to gray conversion.
+let us write a **CUDA kernal** for the RGB to Gray conversion.
 
 	#include <cuda.h>
 	#include <cuda_runtime_api.h>
@@ -35,12 +34,11 @@ let us write a kernal for the rgb to gray conversion.
 	}
 
 
-In the above code,
-b,g,r are one dimensional arrays of unsigned chars holding B, G, R color values of the given image.
+Above CUDA kernel, accepts R,G,B values of the given pixel and computes grayscale value using above formula.
 First we calculate the thread index and write the computed grayscale value at that index.
 
 
-Now let's see the Python interfacing part,
+Now let's see the **Python-C++ interfacing** part,
 
 	extern "C" {
 	void cuda_gray(unsigned char *b, unsigned char *g, unsigned char *r, unsigned char *gray, size_t size){
@@ -83,7 +81,7 @@ Now let's see the Python interfacing part,
 Above function will be exposed in python code to perform RGB2GRAY conversion.
 Here, we allocate memory for R,G,B channel arrays on GPU. THe variables d_b, d_g, d_r are the pointers to memory on GPU (d_ in the name refers to device variable, GPU is called as Device and CPU machines are Host). Save above code in a file name cuda_lib.cu
 
-Once the file is ready, run the following command to generate the .so file.
+Once the file is saved to disk, run the following command in terminal to generate the .so file (shared object file)
 
 	path_to_nvcc -Xcompiler -fPIC -shared -o cuda_gray.so cuda_lib.cu
 
